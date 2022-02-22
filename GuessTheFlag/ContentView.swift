@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var showingScore = false
+//    @State private var showingScore = false
     @State private var scroreTitle = ""
     @State private var score = 0
     
@@ -18,23 +18,22 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [.blue, .black]), startPoint: .top, endPoint: .bottom)
+            RadialGradient(stops: [Gradient.Stop(color: Color(red: 0.1, green: 0.2, blue: 0.45), location: 0.3), .init(color: Color(red: 0.76, green: 0.15, blue: 0.26), location: 0.3)], center: .top, startRadius: 200, endRadius: 700)
                 .ignoresSafeArea()
             VStack {
+                Spacer()
                 Text("Guess the Flag")
-                    .font(.largeTitle.weight(.bold))
+                    .font(.largeTitle.bold())
                     .foregroundColor(.white)
-                
-                // current VStack(spacing: 15) code
                 
                 VStack(spacing: 15) {
                     VStack {
                         Text("Tap the flag of")
                             .font(.subheadline.weight(.heavy))
+                            .foregroundStyle(.secondary)
                         Text(countries[correctAnswer])
                             .font(.largeTitle.weight(.semibold))
                     }
-                    .foregroundColor(.white)
                     ForEach(0..<3) { number in
                         Button {
                             flagTapped(number)
@@ -46,14 +45,28 @@ struct ContentView: View {
                         }
                     }
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                .background(.regularMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                
+                Spacer()
+                Spacer()
+                
+                Text("Score: \(score)")
+                    .foregroundColor(.white)
+                    .font(.title.bold())
+                
+                Spacer()
             }
+            .padding()
             
         }
-        .alert(scroreTitle, isPresented: $showingScore) {
-            Button("Continue", action: askQuestion)
-        } message: {
-            Text("Your score is \(score)")
-        }
+//        .alert(scroreTitle, isPresented: $showingScore) {
+//            Button("Continue", action: askQuestion)
+//        } message: {
+//            Text("Your score is \(score)")
+//        }
     }
     
     func flagTapped(_ number: Int) {
@@ -64,7 +77,8 @@ struct ContentView: View {
             scroreTitle = "Wrong"
             score -= 1
         }
-        showingScore = true
+        askQuestion()
+//        showingScore = true
     }
     
     func askQuestion() {
