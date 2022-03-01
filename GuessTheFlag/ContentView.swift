@@ -31,6 +31,10 @@ struct ContentView: View {
     @State private var correctAnswer = Int.random(in: 0...2)
     
     
+    @State private var animationAmount = 0.0
+    @State private var opacity = 1.0
+    @State private var scaleAmount = 1.0
+    
     var body: some View {
         ZStack {
             RadialGradient(stops: [Gradient.Stop(color: Color(red: 0.1, green: 0.2, blue: 0.45), location: 0.3), .init(color: Color(red: 0.76, green: 0.15, blue: 0.26), location: 0.3)], center: .top, startRadius: 200, endRadius: 700)
@@ -54,6 +58,9 @@ struct ContentView: View {
                             flagTapped(number)
                         } label: {
                             FlagImage(flagName: countries[number])
+                                .rotation3DEffect(.degrees(number == lastClicked ? animationAmount : 0), axis: (x: 0, y: 1, z: 0))
+                                .opacity(number == lastClicked ? 1.0 : opacity)
+                                .scaleEffect(number == lastClicked ? 1.0 : scaleAmount)
                         }
                     }
                 }
@@ -97,14 +104,23 @@ struct ContentView: View {
     
     func flagTapped(_ number: Int) {
         lastClicked = number
-        if number == correctAnswer {
-            scroreTitle = "Correct"
-            score += 1
-            askQuestion()
-        } else {
-            showingScore = true
-            scroreTitle = "Wrong"
-            score -= 1
+        withAnimation(.linear(duration: 0.5)) {
+            animationAmount += 360
+            opacity = 0.25
+            scaleAmount = 0.75
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+            opacity = 1.0
+            scaleAmount = 1.0
+            if number == correctAnswer {
+                scroreTitle = "Correct"
+                score += 1
+                askQuestion()
+            } else {
+                showingScore = true
+                scroreTitle = "Wrong"
+                score -= 1
+            }
         }
     }
     
